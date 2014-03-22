@@ -20,7 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * A utility class to make an HTTP POST request and handle a JSON response
+ * A utility class to send an HTTP POST request and handle a JSON response
  * 
  * @author Ankit Baderiya
  *
@@ -28,34 +28,36 @@ import org.json.JSONObject;
 public class MockUtility {
 
 	private static final String CHARSET = "UTF-8";
-	
+	private static final String CONTENT_TYPE = "application/json";
+	private static final String REQUEST_TYPE = "POST";
+
 	private static int responseCode = -1;
 	private static JSONObject jsonResponse = null;
 	private static HttpURLConnection connection = null;
-	
+
 	private MockUtility() {
 	}
-	
+
 	public static void processRequest(String spec, String param, String value) {
 		try {
 			setUpConnection(spec);
 
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put(param, value);
-			
+
 			postSend(jsonObject);
 
 			responseCode = connection.getResponseCode();
 			if (responseCode == HttpURLConnection.HTTP_OK) {
 				InputStream iStream = connection.getInputStream();
 				Reader reader = new InputStreamReader(iStream);
-				
+
 				// Print String response
 				// processResponse(reader);
-				
+
 				// Print Individual keys
 				processUserKeyResponses(reader);
-				
+
 			} else {
 				System.out.println("Error: " + connection.getResponseMessage());
 			}
@@ -65,27 +67,27 @@ public class MockUtility {
 			closeConnection();
 		}
 	}
-	
+
 	public static void processRequest(String spec, String param, int value) {
 		try {
 			setUpConnection(spec);
 
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put(param, value);
-			
+
 			postSend(jsonObject);
 
 			responseCode = connection.getResponseCode();
 			if (responseCode == HttpURLConnection.HTTP_OK) {
 				InputStream iStream = connection.getInputStream();
 				Reader reader = new InputStreamReader(iStream);
-				
+
 				// Print String response
 				// processResponse(reader);
-				
+
 				// Print Individual keys
 				processClothingKeyResponses(reader);
-				
+
 			} else {
 				System.out.println("Error: " + connection.getResponseMessage());
 			}
@@ -96,7 +98,7 @@ public class MockUtility {
 		}
 	}
 
-	public static void closeConnection() {
+	private static void closeConnection() {
 		connection.disconnect();
 	}
 
@@ -117,14 +119,14 @@ public class MockUtility {
 		System.out.println("Provider: " + provider);
 		System.out.println("First_login: " + first_login);
 	}
-	
+
 	private static void processClothingKeyResponses(Reader reader) throws IOException, JSONException {
 		int contentLength = (int) connection.getContentLengthLong();
 		char[] array = new char[contentLength];
 		reader.read(array);
 		String responseData = new String(array);
 		jsonResponse = new JSONObject(responseData);
-		
+
 		String name = jsonResponse.getString("name");
 		String image_url = jsonResponse.getString("image_url");
 		String artist_url = jsonResponse.getString("artist_url");
@@ -149,7 +151,8 @@ public class MockUtility {
 		System.out.println("hotness_counter: " + hotness_counter);
 	}
 
-	public static void processResponse(Reader reader) throws IOException {
+	@SuppressWarnings("unused")
+	private static void processResponse(Reader reader) throws IOException {
 		BufferedReader in = new BufferedReader(reader);
 		String line = "";
 		StringBuffer response = new StringBuffer();
@@ -160,20 +163,24 @@ public class MockUtility {
 	}
 
 	private static void postSend(JSONObject jsonObject) throws IOException, UnsupportedEncodingException {
-		OutputStream oStream = connection.getOutputStream();
-		Writer writer = new OutputStreamWriter(oStream);
-		writer.write(URLEncoder.encode(jsonObject.toString(), CHARSET));
-		writer.flush();
-		writer.close();
+		Writer writer = null;
+		try {
+			OutputStream oStream = connection.getOutputStream();
+			writer = new OutputStreamWriter(oStream);
+			writer.write(URLEncoder.encode(jsonObject.toString(), CHARSET));
+			writer.flush();
+		} finally {
+			writer.close();
+		}
 	}
 
 	private static void setUpConnection(String spec) throws MalformedURLException, IOException, ProtocolException {
 		URL url = new URL(spec);
 		connection = (HttpURLConnection) url.openConnection();
-		connection.setRequestMethod("POST");
+		connection.setRequestMethod(REQUEST_TYPE);
 		connection.setDoInput(true);
 		connection.setDoOutput(true);
-		connection.setRequestProperty("Content-Type", "application/json");
+		connection.setRequestProperty("Content-Type", CONTENT_TYPE);
 		connection.connect();
 	}
 }
