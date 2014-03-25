@@ -25,7 +25,7 @@ import org.json.JSONObject;
  * @author Ankit Baderiya
  *
  */
-public class MockUtility {
+public class MockStylrUtility {
 
 	private static final String CHARSET = "UTF-8";
 	private static final String CONTENT_TYPE = "application/json";
@@ -35,7 +35,7 @@ public class MockUtility {
 	private static JSONObject jsonResponse = null;
 	private static HttpURLConnection connection = null;
 
-	private MockUtility() {
+	private MockStylrUtility() {
 	}
 
 	public static void processRequest(String spec, String param, String value) {
