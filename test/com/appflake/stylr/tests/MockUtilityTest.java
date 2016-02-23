@@ -22,7 +22,7 @@ public class MockUtilityTest {
 
 	private static final String SPEC_USER = "http://stylr.apiary-mock.com/user.json";
 	private static final String PARAM = "email";
-	private static final String VAL = "silent.dream@gmail.com";
+	private static final String VAL = "ankitbaderiya@gmail.com";
 	private static final String CHARSET = "UTF-8";
 	private static final String CONTENT_TYPE = "application/json";
 	private static final String REQUEST_TYPE = "POST";
@@ -77,7 +77,7 @@ public class MockUtilityTest {
 			String name = jsonResponse.getString("name");
 
 			Assert.assertNotNull(name);
-			Assert.assertEquals(name, "Tony Dieppa");
+			Assert.assertEquals(name, "Ankit Baderiya");
 		}
 	}
 }
